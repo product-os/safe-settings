@@ -5,7 +5,7 @@ describe('Environments', () => {
     let github
     const org = 'bkeepers'
     const repo = 'test'
-  
+
     function fillEnvironment(attrs) {
         if (!attrs.wait_timer) attrs.wait_timer = 0;
         if (!attrs.prevent_self_review) attrs.prevent_self_review = false;
@@ -80,7 +80,62 @@ describe('Environments', () => {
                         app_id: 1
                     }
                 ]
-            }
+            },
+            {
+                name: 'new-wait-timer',
+                wait_timer: 1
+            },
+            {
+                name: 'new-reviewers',
+                reviewers: [
+                    {
+                        type: 'User',
+                        id: 1
+                    },
+                    {
+                        type: 'Team',
+                        id: 2
+                    }
+                ]
+            },
+            {
+                name: 'new-prevent-self-review',
+                prevent_self_review: true
+            },
+            {
+                name: 'new-deployment-branch-policy',
+                deployment_branch_policy: {
+                    protected_branches: true,
+                    custom_branch_policies: false
+                }
+            },
+            {
+                name: 'new-deployment-branch-policy-custom',
+                deployment_branch_policy: {
+                    protected_branches: false,
+                    custom_branch_policies: [
+                        'master',
+                        'dev'
+                    ]
+                }
+            },
+            {
+                name: 'new-variables',
+                variables: [
+                    {
+                        name: 'test',
+                        value: 'test'
+                    }
+                ]
+            },
+            {
+                name: 'new-deployment-protection-rules',
+                deployment_protection_rules: [
+                    {
+                        app_id: 1
+                    }
+                ]
+            },
         ], {
             debug: function() {}
         });
@@ -121,7 +176,7 @@ describe('Environments', () => {
                     ]
                 }
             });
-        
+
         ['wait-timer', 'reviewers', 'prevent-self-review', 'deployment-branch-policy', 'deployment-branch-policy-custom', 'variables', 'deployment-protection-rules'].forEach((environment_name) => {
             when(github.request)
                 .calledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name })
@@ -139,7 +194,7 @@ describe('Environments', () => {
                     data: {
                         custom_deployment_protection_rules: []
                     }
-                }) 
+                })
         });
 
         when(github.request)
