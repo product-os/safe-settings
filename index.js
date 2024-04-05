@@ -89,6 +89,31 @@ module.exports = (robot, { getRouter }, Settings = require('./lib/settings')) =>
     }
   }
 
+  async function renameSync (nop, context, repo = context.repo(), rename, ref) {
+    try {
+      deploymentConfig = await loadYamlFileSystem()
+      robot.log.debug(`deploymentConfig is ${JSON.stringify(deploymentConfig)}`)
+      const configManager = new ConfigManager(context, ref)
+      const runtimeConfig = await configManager.loadGlobalSettingsYaml()
+      const config = Object.assign({}, deploymentConfig, runtimeConfig)
+      const renameConfig = Object.assign({}, config, rename)
+      robot.log.debug(`config for ref ${ref} is ${JSON.stringify(config)}`)
+      return Settings.sync(nop, context, repo, renameConfig, ref )
+    } catch (e) {
+      if (nop) {
+        let filename = env.SETTINGS_FILE_PATH
+        if (!deploymentConfig) {
+          filename = env.DEPLOYMENT_CONFIG_FILE
+          deploymentConfig = {}
+        }
+        const nopcommand = new NopCommand(filename, repo, null, e, 'ERROR')
+        robot.log.error(`NOPCOMMAND ${JSON.stringify(nopcommand)}`)
+        Settings.handleError(nop, context, repo, deploymentConfig, ref, nopcommand)
+      } else {
+        throw e
+      }
+    }
+  }
   /**
    * Loads the deployment config file from file system
    * Do this once when the app starts and then return the cached value
@@ -336,6 +361,24 @@ module.exports = (robot, { getRouter }, Settings = require('./lib/settings')) =>
 
     return syncSettings(false, context)
   })
+
+  robot.on('repository.renamed', async context => {
+    const { payload } = context
+    const { sender } = payload
+
+    robot.log.debug('repository renamed from ', payload.changes.repository.name.from)
+
+    if (sender.type === 'Bot') {
+      robot.log.debug('Repository Edited by a Bot')
+      return
+    }
+    robot.log.debug('Repository Edited by a Human')
+    // Create a repository config to reset the name back to the previous name
+    const rename = {repository: { name: payload.changes.repository.name.from, oldname: payload.repository.name}}
+    const repo = {repo: payload.changes.repository.name.from, owner: payload.repository.owner.login}
+    return renameSync(false, context, repo, rename)
+  })
+
 
   robot.on('check_suite.requested', async context => {
     const { payload } = context
