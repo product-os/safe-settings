@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:18-alpine
 WORKDIR /opt/safe-settings
 ENV NODE_ENV production
 ## Set the Labels
@@ -22,4 +22,4 @@ USER node
 
 ## This does not start properly when using the ['npm','start'] format
 ## so stick with just calling it outright
-CMD npm start
+CMD [ "npm", "start"]
