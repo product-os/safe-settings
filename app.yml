@@ -13,8 +13,8 @@
 # The list of events the GitHub App subscribes to.
 # Uncomment the event names below to enable them.
 default_events:
-  - custom_property_values,
-  - repository_ruleset,
+  - custom_property_values
+  - repository_ruleset
   - check_run
   - check_suite
   - branch_protection_rule
@@ -30,7 +30,7 @@ default_events:
 # the value (for example, write).
 # Valid values are `read`, `write`, and `none`
 default_permissions:
-    organization_custom_properties: admin,
+    organization_custom_properties: admin
 
     # Repository creation, deletion, settings, teams, and collaborators.
     # https://developer.github.com/v3/apps/permissions/#permission-on-administration
