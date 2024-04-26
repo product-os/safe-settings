@@ -22,4 +22,4 @@ USER node
 
 ## This does not start properly when using the ['npm','start'] format
 ## so stick with just calling it outright
-CMD [ "npm", "start"]
+CMD npm start
