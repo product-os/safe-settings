@@ -366,10 +366,46 @@ module.exports = (robot, { getRouter }, Settings = require('./lib/settings')) =>
     const { payload } = context
     const { sender } = payload
 
-    robot.log.debug('repository renamed from ', payload.changes.repository.name.from)
+    robot.log.debug(`repository renamed from ${payload.changes.repository.name.from} to ${payload.repository.name} by ', ${sender.login}`)
 
     if (sender.type === 'Bot') {
       robot.log.debug('Repository Edited by a Bot')
+      const oldPath = `.github/repos/${payload.changes.repository.name.from}.yml`
+      const newPath = `.github/repos/${payload.repository.name}.yml`
+      robot.log.debug(oldPath)
+      try {
+        const repofile =  await context.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+          owner: payload.repository.owner.login,
+          repo: env.ADMIN_REPO,
+          path: oldPath,
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
+        })
+        let content = Buffer.from(repofile.data.content, 'base64').toString()
+        robot.log.debug(content)
+        content = `# Repo Renamed and safe-settings renamed the file from ${payload.changes.repository.name.from} to ${payload.repository.name}\n\n${content}`
+        content = Buffer.from(content).toString('base64')
+        const update = await context.octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+          owner: payload.repository.owner.login,
+          repo: env.ADMIN_REPO,
+          path: newPath,
+          name:  `${payload.repository.name}.yml`,
+          content: content,
+          message: `Repo Renamed and safe-settings renamed the file from ${payload.changes.repository.name.from} to ${payload.repository.name}`,
+          sha: repofile.data.sha,
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
+        })
+        console.log(update)
+      } catch (error) {
+        if (error.status === 404) {
+          //nop
+        } else {  
+          robot.log.error(error)
+        }
+      } 
       return
     }
     robot.log.debug('Repository Edited by a Human')
