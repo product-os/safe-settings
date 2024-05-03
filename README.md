@@ -5,34 +5,33 @@
 `Safe-settings`– an app to manage policy-as-code and apply repository settings to repositories across an organization.
 
 1. In `safe-settings` all the settings are stored centrally in an `admin` repo within the organization. This is important. Unlike [Settings Probot](https://github.com/probot/settings), the settings files cannot be in individual repositories.  
-    > [!Note]
-    > It is possible to override this behavior and specify a custom repo instead of the `admin` repo.<br>
-    > This could be done by setting an `env` variable called `ADMIN_REPO`.
+  > [!Note]
+  > It is possible to override this behavior and specify a custom repo instead of the `admin` repo.<br>
+  > This could be done by setting an `env` variable called `ADMIN_REPO`.
 
-1. The **settings** in the **default** branch is applied. If the settings are changed in a non-default branch and a PR is created to merge the changes, it would be run in a `dry-run` mode to evaluate and validate the settings, and checks would pass or fail based on that.
+2. The **settings** in the **default** branch is applied. If the settings are changed in a non-default branch and a PR is created to merge the changes, it would be run in a `dry-run` mode to evaluate and validate the settings, and checks would pass or fail based on that.
 2. In `safe-settings` the settings can have 2 types of targets:
    1. `org` - These settings are applied to the `org`. `Org`-targeted settings are defined in `.github/settings.yml` . Currently, only `rulesets` are supported as `org`-targeted settings.
    2. `repo` - These settings are applied to `repos`
    
 3. For The `repo`-targeted settings there can be at 3 levels at which the settings could be managed:
    1. Org-level settings are defined in `.github/settings.yml`  
-       > [!Note]
-       > It is possible to override this behavior and specify a different filename for the `settings` yml repo.<br>
-       > This could be done by setting an `env` variable called `SETTINGS_FILE_PATH`.<br>
-       > Similarly, the `.github` directory can be overridden with an `env` variable called `CONFIG_PATH`.
+> [!Note]
+> It is possible to override this behavior and specify a different filename for the `settings` yml repo.<br>
+> This could be done by setting an `env` variable called `SETTINGS_FILE_PATH`.<br>
+> Similarly, the `.github` directory can be overridden with an `env` variable called `CONFIG_PATH`.
 
    2. `Suborg` level settings. A `suborg` is an arbitrary collection of repos belonging to projects, business units, or teams. The `suborg` settings reside in a yaml file for each `suborg` in the `.github/suborgs` folder. 
    
-   > [!Note]
-   > In `safe-settings`, sub orgs could be groups of repos based on `repo names`, or `teams` which the repos have collaborators from, or `custom property values` set for the repos
+> [!Note]
+> In `safe-settings`, sub orgs could be groups of repos based on `repo names`, or `teams` which the repos have collaborators from, or `custom property values` set for the repos
 
    3. `Repo` level settings. They reside in a repo specific yaml in `.github/repos` folder
 4. It is recommended to break the settings into org-level, suborg-level, and repo-level units. This will allow different teams to define and manage policies for their specific projects or business units. With `CODEOWNERS`, this will allow different people to be responsible for approving changes in different projects.
 
 > [!Note]
 > `Suborg` and `Repo` level settings directory structure cannot be customized.
-
-> [!Note]
+>
 > The settings file must have a `.yml` extension only. `.yaml` extension is ignored, for now.
 
 ## How it works
@@ -46,13 +45,19 @@ The App listens to the following webhook events:
 
 - **branch_protection_rule**: If a branch protection rule is modified or deleted, `safe-settings` will `sync` the settings to prevent any unauthorized changes.
 
-- **repository.edited**: If the default branch is renamed, `safe-settings` will `sync` the settings, returning the default branch to the configured value for the repo.
+- **repository.edited**: For e.g. If the default branch is renamed, or if topics change, `safe-settings` will `sync` the settings, to prevent any unauthorized changes.
+
+- **repository.renamed**: If a repository is renamed, the default behavior is safe-settings will ignore this (for backward-compatibility). If `BLOCK_REPO_RENAME_BY_HUMAN` env variable is set to true, `safe-settings` will revert the repo to the previous name unless it is renamed using a `bot`. If it is renamed using a `bot`, it will try to copy the existing `<old-repo>.yml` to `<new-repo>.yml` so that the repo config yml stays consistent. If a <new-repo.yml> file already exists, it doesn't create a new one.
 
 - **pull_request.opened**, **pull_request.reopened**, **check_suite.requested**: If the settings are changed, but it is not in the `default` branch, and there is an existing PR, the code will validate the settings changes by running safe-settings in `nop` mode and update the PR with the `dry-run` status. 
 
 - **repository_ruleset**: If the `ruleset` settings are modified in the UI manually, `safe-settings` will `sync` the settings to prevent any unauthorized changes.
 
 - **member_change_events**: If a member is added or removed from a repository, `safe-settings` will `sync` the settings to prevent any unauthorized changes.
+
+- **member**', __team.added_to_repository__, __team.removed_from_repository__, __team.edited__: `safe-settings` will `sync` the settings to prevent any unauthorized changes.
+
+- __custom_property_values__: If new repository properties are set for a repository, `safe-settings` will run to so that if a sub-org config is defined by that property, it will be applied for the repo
   
 ### Restricting `safe-settings` to specific repos
 `safe-settings` can be turned on only to a subset of repos by specifying them in the runtime settings file, `deployment-settings.yml`.  
