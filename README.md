@@ -58,7 +58,10 @@ The App listens to the following webhook events:
 - **member**', __team.added_to_repository__, __team.removed_from_repository__, __team.edited__: `safe-settings` will `sync` the settings to prevent any unauthorized changes.
 
 - __custom_property_values__: If new repository properties are set for a repository, `safe-settings` will run to so that if a sub-org config is defined by that property, it will be applied for the repo
-  
+
+### Use `safe-settings` to rename repos
+If you rename a <repo.yml> that corresponds to a repo, safe-settings will rename the repo to the new name. This behavior will take effect whether the env variable `BLOCK_REPO_RENAME_BY_HUMAN` is set or not.
+
 ### Restricting `safe-settings` to specific repos
 `safe-settings` can be turned on only to a subset of repos by specifying them in the runtime settings file, `deployment-settings.yml`.  
 If no file is specified, then the following repositories -  `'admin', '.github', 'safe-settings'` are exempted by default.  
