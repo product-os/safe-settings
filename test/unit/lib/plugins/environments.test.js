@@ -37,18 +37,14 @@ describe('Environments Plugin test suite', () => {
             variables: []
           }
         })
-    }
-    );
-
-    AllEnvironmentNamesBeingTested.forEach((environment_name) => {
-      when(github.request)
+        when(github.request)
         .calledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name })
         .mockResolvedValue({
           data: {
             custom_deployment_protection_rules: []
           }
         })
-    }
+      }
     );
 
     when(github.request)
