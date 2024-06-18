@@ -820,7 +820,14 @@ entries:
       hasChanges: true
     }
     const ignorableFields = []
-    const mergeDeep = new MergeDeep(log, ignorableFields)
+    const mockReturnGitHubContext = jest.fn().mockReturnValue({
+      request: () => {},
+    });
+    const mergeDeep = new MergeDeep(
+      log,
+      mockReturnGitHubContext,
+      ignorableFields
+    )
     const merged = mergeDeep.compareDeep(target, source)
     console.log(`diffs ${JSON.stringify(merged, null, 2)}`)
     expect(merged).toEqual(expected)
