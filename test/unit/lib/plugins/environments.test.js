@@ -6,7 +6,9 @@ describe('Environments Plugin test suite', () => {
   let environment_name = ''
   const org = 'bkeepers'
   const repo = 'test'
-  const AllEnvironmentNamesBeingTested = ['wait-timer_environment', 'wait-timer_2_environment', 'reviewers_environment', 'prevent-self-review_environment', 'deployment-branch-policy_environment', 'deployment-branch-policy-custom_environment', 'variables_environment', 'deployment-protection-rules_environment']
+  const PrimaryEnvironmentNamesBeingTested = ['wait-timer_environment', 'wait-timer_2_environment', 'reviewers_environment', 'prevent-self-review_environment', 'deployment-branch-policy_environment', 'deployment-branch-policy-custom_environment', 'variables_environment', 'deployment-protection-rules_environment', 'new_environment', 'old_environment']
+  const EnvironmentNamesForTheNewEnvironmentsTest = ['new-wait-timer', 'new-reviewers', 'new-prevent-self-review', 'new-deployment-branch-policy', 'new-deployment-branch-policy-custom', 'new-variables', 'new-deployment-protection-rules']
+  const AllEnvironmentNamesBeingTested = PrimaryEnvironmentNamesBeingTested.concat(EnvironmentNamesForTheNewEnvironmentsTest)
   const log = { debug: jest.fn(), error: console.error }
   const errors = []
 
@@ -82,10 +84,6 @@ describe('Environments Plugin test suite', () => {
   })
 
   afterEach(() => {
-    // every test should have included the retrieval of the existing GitHub configuration for the environment, variables, and deployment protection rules.
-    expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
-    expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
-    expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
     jest.clearAllMocks();
   });
 
@@ -121,6 +119,9 @@ describe('Environments Plugin test suite', () => {
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
         //assert - update to the wait timer was requested with value 1
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
         expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
           org,
           repo,
@@ -179,6 +180,9 @@ describe('Environments Plugin test suite', () => {
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
         //assert - update the reviewers
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
         expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
           org,
           repo,
@@ -224,6 +228,9 @@ describe('Environments Plugin test suite', () => {
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
         //assert - update the prevent self review boolean
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
         expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
           org,
           repo,
@@ -267,6 +274,9 @@ describe('Environments Plugin test suite', () => {
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
         //assert - update branch policy
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
         expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
           org,
           repo,
@@ -316,6 +326,9 @@ describe('Environments Plugin test suite', () => {
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
         //assert - update the custom branch policies
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
         expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
           org,
           repo,
@@ -376,6 +389,9 @@ describe('Environments Plugin test suite', () => {
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
         //assert - update the variables
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
         expect(github.request).toHaveBeenCalledWith('POST /repos/:org/:repo/environments/:environment_name/variables', expect.objectContaining({
           org,
           repo,
@@ -421,6 +437,9 @@ describe('Environments Plugin test suite', () => {
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
         //assert - update the deployment protection rules
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
         expect(github.request).toHaveBeenCalledWith('POST /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', expect.objectContaining({
           org,
           repo,
@@ -466,6 +485,9 @@ describe('Environments Plugin test suite', () => {
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
         //assert - update to the wait timer was requested with value 2
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
         expect(github.request).not.toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
           org,
           repo,
@@ -476,11 +498,100 @@ describe('Environments Plugin test suite', () => {
     })
   })
 
+  // Zero existing environments
+  describe('When there are no existing environments, and the config has one environment', () => {
+    it('detect that and environment needs to be added, and add it', async () => {
+      //arrange
+      environment_name = 'new_environment'
+      // represent a new environment
+      const plugin = new Environments(undefined, github, { owner: org, repo }, [
+        {
+          name: environment_name,
+        }
+      ], log, errors);
+
+      //model an existing state which has zero environments
+      when(github.request)
+        .calledWith('GET /repos/:org/:repo/environments', { org, repo })
+        .mockResolvedValue({
+          data: {
+            environments: [
+
+            ]
+          }
+        });
+
+      //act - run sync() in environments.js
+      await plugin.sync().then(() => {
+        //assert - the new environment was added
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).not.toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).not.toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+          org,
+          repo,
+          environment_name: environment_name
+        }));
+      })
+    })
+  })
+
+  // Single environment name change
+  describe('When there is one existing environment with an old name, and the config has one environment with a new name', () => {
+    it('detect that an environment name has changed, add the new one, and delete the old one', async () => {
+      //arrange
+      environment_name = 'new_environment'
+      const old_environment_name = 'old_environment'
+      // represent a new environment
+      const plugin = new Environments(undefined, github, { owner: org, repo }, [
+        {
+          name: environment_name,
+        }
+      ], log, errors);
+
+      //model an existing environment with an old name
+      when(github.request)
+        .calledWith('GET /repos/:org/:repo/environments', { org, repo })
+        .mockResolvedValue({
+          data: {
+            environments: [
+              fillEnvironment({
+                name: old_environment_name
+              })
+            ]
+          }
+        });
+
+      //act - run sync() in environments.js
+      await plugin.sync().then(() => {
+        //assert - the new environment was added
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).not.toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).not.toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+          org,
+          repo,
+          environment_name: environment_name
+        }));
+
+        //assert - the old environment was deleted
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).not.toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, old_environment_name });
+        expect(github.request).not.toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, old_environment_name });
+        expect(github.request).toHaveBeenCalledWith('DELETE /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+          org,
+          repo,
+          environment_name: old_environment_name
+        }));
+
+      })
+    })
+  })
+
   // original 7 changes all combined together test
   describe('When there are changes across 7 environments', () => {
     it('detect and apply all changes', async () => {
       //arrange
-      environment_name = 'wait-timer_environment' //used in afterEach()
       // represent 7 environments and their desired settings
       const plugin = new Environments(undefined, github, { owner: org, repo }, [
         {
@@ -582,7 +693,7 @@ describe('Environments Plugin test suite', () => {
 
       //act - run sync() in environments.js
       await plugin.sync().then(() => {
-        //assert - update to the wait timer was requested with value 2
+        //assert - update to the wait timer was requested with value 1, etc.
 
         expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
 
@@ -677,6 +788,277 @@ describe('Environments Plugin test suite', () => {
             environment_name: 'deployment-protection-rules_environment',
             integration_id: 1
         }));
+      })
+    })
+  })
+
+  // Add 7 new environments, each with one environment attribute set
+  describe('When there are 7 existing environments and 7 new environments each with one environment attribute in the config', () => {
+    it('make changes in the existing environments and also add the 7 new environments', async () => {
+      //arrange
+      // represent 14 environments (7 new) and their desired settings
+      const plugin = new Environments(undefined, github, { owner: org, repo }, [
+        {
+          name: 'wait-timer_environment',
+          wait_timer: 1
+        },
+        {
+          name: 'reviewers_environment',
+          reviewers: [
+            {
+              type: 'User',
+              id: 1
+            },
+            {
+              type: 'Team',
+              id: 2
+            }
+          ]
+        },
+        {
+          name: 'prevent-self-review_environment',
+          prevent_self_review: true
+        },
+        {
+          name: 'deployment-branch-policy_environment',
+          deployment_branch_policy: {
+            protected_branches: true,
+            custom_branch_policies: false
+          }
+        },
+        {
+          name: 'deployment-branch-policy-custom_environment',
+          deployment_branch_policy: {
+            protected_branches: false,
+            custom_branch_policies: [
+              'master',
+              'dev'
+            ]
+          }
+        },
+        {
+          name: 'variables_environment',
+          variables: [
+            {
+              name: 'test',
+              value: 'test'
+            }
+          ]
+        },
+        {
+          name: 'deployment-protection-rules_environment',
+          deployment_protection_rules: [
+            {
+              app_id: 1
+            }
+          ]
+        },
+        {
+            name: 'new-wait-timer',
+            wait_timer: 1
+        },
+        {
+            name: 'new-reviewers',
+            reviewers: [
+                {
+                    type: 'User',
+                    id: 1
+                },
+                {
+                    type: 'Team',
+                    id: 2
+                }
+            ]
+        },
+        {
+            name: 'new-prevent-self-review',
+            prevent_self_review: true
+        },
+        {
+            name: 'new-deployment-branch-policy',
+            deployment_branch_policy: {
+                protected_branches: true,
+                custom_branch_policies: false
+            }
+        },
+        {
+            name: 'new-deployment-branch-policy-custom',
+            deployment_branch_policy: {
+                protected_branches: false,
+                custom_branch_policies: [
+                    'master',
+                    'dev'
+                ]
+            }
+        },
+        {
+            name: 'new-variables',
+            variables: [
+                {
+                    name: 'test',
+                    value: 'test'
+                }
+            ]
+        },
+        {
+            name: 'new-deployment-protection-rules',
+            deployment_protection_rules: [
+                {
+                    app_id: 1
+                }
+            ]
+        }
+      ], log, errors);
+
+      // model 7 existing environments and their settings
+      // note: wait-timer, required_reviewers, and branch_policy are modeled incorrectly here as they are not wrapped by protection_rules[]
+      //       the test succeeds anyway because it so happens that the defaults assigned for missing values, coincidentally match the values below
+      when(github.request)
+        .calledWith('GET /repos/:org/:repo/environments', { org, repo })
+        .mockResolvedValue({
+          data: {
+            environments: [
+              fillEnvironment({
+                name: 'wait-timer_environment',
+                wait_timer: 0
+              }),
+              fillEnvironment({
+                name: 'reviewers_environment',
+                reviewers: []
+              }),
+              fillEnvironment({
+                name: 'prevent-self-review_environment',
+                prevent_self_review: false
+              }),
+              fillEnvironment({
+                name: 'deployment-branch-policy_environment',
+                deployment_branch_policy: null
+              }),
+              fillEnvironment({
+                name: 'deployment-branch-policy-custom_environment',
+                deployment_branch_policy: null
+              }),
+              fillEnvironment({
+                name: 'variables_environment',
+                variables: []
+              }),
+              fillEnvironment({
+                name: 'deployment-protection-rules_environment',
+                deployment_protection_rules: []
+              })
+            ]
+          }
+        });
+
+      //act - run sync() in environments.js
+      await plugin.sync().then(() => {
+        //assert - update to the wait timer was requested with value 1, etc.
+
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+
+        ['wait-timer_environment', 'reviewers_environment', 'prevent-self-review_environment', 'deployment-branch-policy_environment', 'deployment-branch-policy-custom_environment', 'variables_environment', 'deployment-protection-rules_environment'].forEach((environment_name) => {
+            expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+
+            expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
+        });
+
+        expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'wait-timer_environment',
+            wait_timer: 1
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'reviewers_environment',
+            reviewers: [
+                {
+                    type: 'User',
+                    id: 1
+                },
+                {
+                    type: 'Team',
+                    id: 2
+                }
+            ]
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'prevent-self-review_environment',
+            prevent_self_review: true
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'prevent-self-review_environment',
+            prevent_self_review: true
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'deployment-branch-policy_environment',
+            deployment_branch_policy: {
+                protected_branches: true,
+                custom_branch_policies: false
+            }
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'deployment-branch-policy-custom_environment',
+            deployment_branch_policy: {
+                protected_branches: false,
+                custom_branch_policies: true
+            }
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('POST /repos/:org/:repo/environments/:environment_name/deployment-branch-policies', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'deployment-branch-policy-custom_environment',
+            name: 'master'
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('POST /repos/:org/:repo/environments/:environment_name/deployment-branch-policies', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'deployment-branch-policy-custom_environment',
+            name: 'dev'
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('POST /repos/:org/:repo/environments/:environment_name/variables', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'variables_environment',
+            name: 'test',
+            value: 'test'
+        }));
+
+        expect(github.request).toHaveBeenCalledWith('POST /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', expect.objectContaining({
+            org,
+            repo,
+            environment_name: 'deployment-protection-rules_environment',
+            integration_id: 1
+        }));
+
+        //assert - seven new environments were also added
+        EnvironmentNamesForTheNewEnvironmentsTest.forEach(new_environment_name => {
+          expect(github.request).not.toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, new_environment_name });
+          expect(github.request).not.toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, new_environment_name });
+          expect(github.request).toHaveBeenCalledWith('PUT /repos/:org/:repo/environments/:environment_name', expect.objectContaining({
+            org,
+            repo,
+            environment_name: new_environment_name
+          }));
+        });
+
       })
     })
   })
