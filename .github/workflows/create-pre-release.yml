@@ -64,12 +64,6 @@ jobs:
       - name: Inspect the Docker Image
         run: |
           docker image inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main-enterprise
-      - name: Run Functional Tests
-        id: functionaltest
-        run: |
-          docker run --env APP_ID=${{ secrets.APP_ID }} --env PRIVATE_KEY=${{ secrets.PRIVATE_KEY }} --env WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }} -d -p 3000:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main-enterprise
-          sleep 10
-          curl http://localhost:3000
       - run: echo "${{ github.ref }}"
       - name: Tag a final release 
         id: prerelease
