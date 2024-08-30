@@ -1,4 +1,4 @@
-const Glob = require('../../../lib/Glob')
+const Glob = require('../../../lib/glob')
 
 describe('glob test', function () {
 
