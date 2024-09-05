@@ -365,7 +365,7 @@ describe('Environments Plugin test suite', () => {
           name: environment_name,
           variables: [
             {
-              name: 'test',
+              name: 'TEST',
               value: 'test'
             }
           ]
@@ -396,7 +396,7 @@ describe('Environments Plugin test suite', () => {
           org,
           repo,
           environment_name: environment_name,
-          name: 'test',
+          name: 'TEST',
           value: 'test'
         }));
       })
@@ -414,7 +414,73 @@ describe('Environments Plugin test suite', () => {
           name: environment_name,
           variables: [
             {
-              name: 'test',
+              name: 'TEST',
+              value: 'test'
+            }
+          ]
+        }
+      ], log, errors);
+
+      //model an existing environment with no reviewers
+      when(github.request)
+        .calledWith('GET /repos/:org/:repo/environments', { org, repo })
+        .mockResolvedValue({
+          data: {
+            environments: [
+              fillEnvironment({
+                name: environment_name,
+                variables: []
+              })
+            ]
+          }
+        });
+
+      when(github.request)
+        .calledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name })
+        .mockResolvedValue({
+          data: {
+            variables: [
+              {
+                name: 'TEST',
+                value: 'old'
+              },
+              {
+                name: 'TEST2',
+                value: 'test2'
+              }
+            ]
+          }
+        })
+
+      //act - run sync() in environments.js
+      await plugin.sync().then(() => {
+        //assert - update the variables
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments', { org, repo });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/variables', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('GET /repos/:org/:repo/environments/:environment_name/deployment_protection_rules', { org, repo, environment_name });
+        expect(github.request).toHaveBeenCalledWith('PATCH /repos/:org/:repo/environments/:environment_name/variables/:variable_name', expect.objectContaining({
+          org,
+          repo,
+          environment_name: environment_name,
+          variable_name: 'TEST',
+          value: 'test'
+        }));
+      })
+    })
+  })
+
+  // patch variable
+  describe('When there are existing lowercase variables and one requires an update', () => {
+    it('detect divergence and add the variable', async () => {
+      //arrange
+      environment_name = 'variables_environment'
+      // represent config with a reviewers being a user and a team
+      const plugin = new Environments(undefined, github, { owner: org, repo }, [
+        {
+          name: environment_name,
+          variables: [
+            {
+              name: 'TEST',
               value: 'test'
             }
           ]
@@ -462,7 +528,7 @@ describe('Environments Plugin test suite', () => {
           org,
           repo,
           environment_name: environment_name,
-          variable_name: 'test',
+          variable_name: 'TEST',
           value: 'test'
         }));
       })
@@ -702,7 +768,7 @@ describe('Environments Plugin test suite', () => {
           name: 'variables_environment',
           variables: [
             {
-              name: 'test',
+              name: 'TEST',
               value: 'test'
             }
           ]
@@ -844,7 +910,7 @@ describe('Environments Plugin test suite', () => {
             org,
             repo,
             environment_name: 'variables_environment',
-            name: 'test',
+            name: 'TEST',
             value: 'test'
         }));
 
@@ -906,7 +972,7 @@ describe('Environments Plugin test suite', () => {
           name: 'variables_environment',
           variables: [
             {
-              name: 'test',
+              name: 'TEST',
               value: 'test'
             }
           ]
@@ -961,7 +1027,7 @@ describe('Environments Plugin test suite', () => {
             name: 'new-variables',
             variables: [
                 {
-                    name: 'test',
+                    name: 'TEST',
                     value: 'test'
                 }
             ]
@@ -1103,7 +1169,7 @@ describe('Environments Plugin test suite', () => {
             org,
             repo,
             environment_name: 'variables_environment',
-            name: 'test',
+            name: 'TEST',
             value: 'test'
         }));
 
