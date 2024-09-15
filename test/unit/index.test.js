@@ -24,7 +24,7 @@ describe.skip('plugin', () => {
       }
     }
 
-    app = new Probot({ secret: "abcdef", Octokit })
+    app = new Probot({ secret: 'abcdef', Octokit })
     github = {
       repos: {
         getContents: jest.fn(() => Promise.resolve({ data: { content: '' } }))
@@ -151,5 +151,4 @@ describe.skip('plugin', () => {
       expect(sync).toHaveBeenCalled()
     })
   })
-
 })
