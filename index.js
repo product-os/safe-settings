@@ -11,7 +11,6 @@ let deploymentConfig
 
 
 module.exports = (robot, { getRouter }, Settings = require('./lib/settings')) => {
-  let appName = 'safe-settings'
   let appSlug = 'safe-settings'
   async function syncAllSettings (nop, context, repo = context.repo(), ref) {
     try {
@@ -227,7 +226,6 @@ module.exports = (robot, { getRouter }, Settings = require('./lib/settings')) =>
       const installation = installations[0]
       const github = await robot.auth(installation.id)
       const app = await github.apps.getAuthenticated()
-      appName = app.data.name
       appSlug = app.data.slug
       robot.log.debug(`Validated the app is configured properly = \n${JSON.stringify(app.data, null, 2)}`)
     }
@@ -439,7 +437,7 @@ module.exports = (robot, { getRouter }, Settings = require('./lib/settings')) =>
         } catch (error) {
           if (error.status === 404) {
             // if the a config file does not exist, create one from the old one
-            const update = await context.octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+            await context.octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
               owner: payload.repository.owner.login,
               repo: env.ADMIN_REPO,
               path: newPath,

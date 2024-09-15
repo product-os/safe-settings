@@ -1,4 +1,4 @@
-const { Probot, ProbotOctokit } = require('probot')
+const { Probot } = require('probot')
 const plugin = require('../../index')
 
 describe.skip('plugin', () => {
