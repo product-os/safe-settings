@@ -1,15 +1,15 @@
 name: 'Publish Docker'
 description: 'Publish to Docker'
 inputs:
-  docker_username:  
+  docker_username:
     description: 'Docker user'
     required: true
-  docker_password:  
+  docker_password:
     description: 'Docker Password'
     required: true
-  tag:  
+  tag:
     description: 'Image tag '
-    required: true  
+    required: true
     default: 'user/app:latest'
 outputs:
   imageid:
@@ -19,6 +19,8 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
     - name: Setup node
       uses: actions/setup-node@v3
       with:
@@ -28,7 +30,7 @@ runs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
     - name: Login to DockerHub
-      uses: docker/login-action@v1 
+      uses: docker/login-action@v1
       with:
         username: ${{ inputs.DOCKER_USERNAME }}
         password: ${{ inputs.DOCKER_PASSWORD }}
@@ -59,4 +61,4 @@ runs:
         file: ./Dockerfile
         push: true
         tags:  |
-            ${{ inputs.tag }}  
+            ${{ inputs.tag }}

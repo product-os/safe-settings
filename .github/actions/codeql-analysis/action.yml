@@ -3,12 +3,14 @@ description: 'Perform code scanning for vulnerabilities'
 inputs:
   languages:
     description: 'CodeQL Languages'
-    required: true    
+    required: true
 runs:
   using: "composite"
   steps:
     - name: 'Checkout repository'
       uses: actions/checkout@v3
+      with:
+        persist-credentials: false
     - name: 'Initialize CodeQL'
       uses: github/codeql-action/init@v2
       with:
